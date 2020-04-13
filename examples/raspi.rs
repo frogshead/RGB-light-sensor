@@ -1,0 +1,13 @@
+extern crate linux_embedded_hal as hal;
+extern crate isl229125;
+
+
+fn main(){
+    let dev = hal::I2cdev::new("/dev/i2c-1").unwrap();
+    let mut led_counter = isl229125::Isl29125::new(dev);
+    let id = led_counter.verify_device_id();
+    match id{
+        Ok(id) => print!("Find Correct device"),
+        Err(e) => print!("Something went wrong")
+    }
+}
