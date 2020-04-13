@@ -13,14 +13,14 @@ pub enum Error<E> {
     InvalidInputData,
     WrongDeviceId,
 }
-struct LedCounter {
-    red: Option<u16>,
-    green: Option<u16>,
-    blue: Option<u16>,
+pub struct LedCounter {
+    pub red: Option<u16>,
+    pub green: Option<u16>,
+    pub blue: Option<u16>,
 }
 pub struct Isl29125<I2C> {
     i2c: I2C,
-    led_counts: LedCounter,
+    pub led_counts: LedCounter,
 }
 
 impl<I2C, E> Isl29125<I2C>
@@ -50,7 +50,7 @@ where
             Err(e) => Err(e),
         }
     }
-    fn read_led_counters(&mut self) -> Result<(), Error<E>>{
+    pub fn read_led_counters(&mut self) -> Result<(), Error<E>>{
         let mut data: [u8; 6] = [0, 0, 0,0,0,0];
         self.i2c
             .write_read(DEVICE_ADDRESS, &[RegisterMap::GREEN_DATA_LOW_BYTE], &mut data)
