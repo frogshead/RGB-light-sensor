@@ -8,7 +8,7 @@ fn main(){
     let id = led_counter.verify_device_id();
     match id{
         Ok(id) =>{ 
-            print!("Find Correct device: {:?}", id);
+            println!("Find Correct device: {:?}", id);
             match led_counter.read_led_counters(){
                 Ok(_) => {
                     println!("Red Counts: {:?}", led_counter.led_counts.red);
