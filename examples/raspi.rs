@@ -10,7 +10,11 @@ fn main(){
         Ok(id) =>{ 
             print!("Find Correct device: {:?}", id);
             match led_counter.read_led_counters(){
-                Ok(_) => println!("Counts: {:?}", led_counter.led_counts.green),
+                Ok(_) => {
+                    println!("Red Counts: {:?}", led_counter.led_counts.red);
+                    println!("Green Counts: {:?}", led_counter.led_counts.green);
+                    println!("Blue Counts: {:?}", led_counter.led_counts.blue);
+                }
                 Err(_) => println!("Cant read counters"),
             }
 
