@@ -14,9 +14,9 @@ fn main(){
 
                 match led_counter.read_led_counters(){
                     Ok(_) => {
-                        println!("Red Counts: {:?}", led_counter.led_counts.red);
-                        println!("Green Counts: {:?}", led_counter.led_counts.green);
-                        println!("Blue Counts: {:?}", led_counter.led_counts.blue);
+                        print!("Red Counts: {:?}", led_counter.led_counts.red);
+                        //println!("Green Counts: {:?}", led_counter.led_counts.green);
+                        //println!("Blue Counts: {:?}", led_counter.led_counts.blue);
                     }
                     Err(_) => println!("Cant read counters"),
                 }
