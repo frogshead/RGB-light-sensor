@@ -56,10 +56,24 @@ where
             .write_read(DEVICE_ADDRESS, &[RegisterMap::GREEN_DATA_LOW_BYTE], &mut data)
             .map_err(Error::I2C)
             .and(Ok(self.set_count_values(data)))
+    }
+
+    pub fn set_operating_mode(&mut self, mode: OperationModes) -> Result<(), Error<E>>{
+        let mut current_register_value: [u8; 1] = [0];
+        match self.i2c.write_read(DEVICE_ADDRESS, &[RegisterMap::CONFIGURATION1],&mut current_register_value){
+            Ok(_) => {
+                current_register_value[0] |= mode as u8;
+                match self.i2c.write(DEVICE_ADDRESS,&[RegisterMap::CONFIGURATION1, current_register_value[0]]){
+                    Ok(_) => Ok(()),
+                    Err(e) => return Err(Error::I2C(e))
+                }
+                
             
+            },
+            Err(e) => Err(Error::I2C(e))
+
+        }
             
-        
-        
     }
 
     fn set_count_values(&mut self, values: [u8; 6]) {
@@ -132,7 +146,6 @@ pub enum InterruptPersistControl {
     Four,
     Eight,
 }
-
 pub enum RgbConversionDone {
     Disable,
     Enable,
@@ -189,10 +202,16 @@ mod tests {
         assert_eq!(isl29125.led_counts.green, Some(0x00ff));
         assert_eq!(isl29125.led_counts.blue, Some(0x00));
         assert_eq!(isl29125.led_counts.red, Some(0x00));
+    }
 
-
-        
-        
-        
+    #[test]
+    fn name() {
+        let expectations = [hal::i2c::Transaction::write_read(
+            DEVICE_ADDRESS,
+            vec![0x00],
+            vec![0x75],
+        )];
+        let i2c = hal::i2c::Mock::new(&expectations);
+        let mut isl29125 = Isl29125::new(i2c).set_operating_mode(OperationModes::Green_Red_Blue);
     }
 }

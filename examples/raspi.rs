@@ -5,6 +5,7 @@ extern crate isl229125;
 fn main(){
     let dev = hal::I2cdev::new("/dev/i2c-1").unwrap();
     let mut led_counter = isl229125::Isl29125::new(dev);
+    led_counter.set_operating_mode(isl229125::OperationModes::Green_Red_Blue).unwrap();
     let id = led_counter.verify_device_id();
     match id{
         Ok(id) =>{ 
