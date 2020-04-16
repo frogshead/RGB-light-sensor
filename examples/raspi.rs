@@ -7,6 +7,10 @@ fn main(){
     let mut led_counter = isl229125::Isl29125::new(dev);
     led_counter.set_operating_mode(isl229125::OperationModes::GreenOnly).unwrap();
     let id = led_counter.verify_device_id();
+    match led_counter.read_all_registers(){
+        Ok(values) => println!("register dumb: {:?}", values),
+        Err(_) => println!("Cant read registers")
+    }
     match id{
         Ok(id) =>{ 
             println!("Find Correct device: {:?}", id);

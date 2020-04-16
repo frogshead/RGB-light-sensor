@@ -90,6 +90,13 @@ where
             .map_err(Error::I2C)
             .and(Ok(data[0]))
     }
+
+    pub fn read_all_registers(&mut self) -> Result<[u8; 15], Error<E>>{
+        let mut data: [u8; 15] = [0; 15];
+        self.i2c.write_read(DEVICE_ADDRESS, &[RegisterMap::DEVICE_ID], &mut data)
+            .map_err(Error::I2C)
+            .and(Ok(data))
+    }
 }
 
 struct RegisterMap;
