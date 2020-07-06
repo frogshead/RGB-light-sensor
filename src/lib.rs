@@ -211,14 +211,4 @@ mod tests {
         assert_eq!(isl29125.led_counts.red, Some(0x00));
     }
 
-    #[test]
-    fn name() {
-        let expectations = [hal::i2c::Transaction::write_read(
-            DEVICE_ADDRESS,
-            vec![0x00],
-            vec![0x75],
-        )];
-        let i2c = hal::i2c::Mock::new(&expectations);
-        let mut isl29125 = Isl29125::new(i2c).set_operating_mode(OperationModes::Green_Red_Blue);
-    }
 }
