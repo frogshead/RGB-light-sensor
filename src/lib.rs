@@ -13,6 +13,19 @@ pub enum Error<E> {
     InvalidInputData,
     WrongDeviceId,
 }
+
+impl<E: core::fmt::Debug + core::fmt::Display> core::fmt::Display for Error<E> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Error::I2C(e) => write!(f, "I2C error: {}", e),
+            Error::InvalidInputData => write!(f, "Invalid input data"),
+            Error::WrongDeviceId => write!(f, "Wrong device ID"),
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl<E: core::fmt::Debug + core::fmt::Display> std::error::Error for Error<E> {}
 pub struct LedCounter {
     pub red: Option<u16>,
     pub green: Option<u16>,
