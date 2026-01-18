@@ -159,5 +159,5 @@ Author: Mikko Viitamäki
 
 ## Resources
 
-- [ISL29125 Datasheet](https://www.renesas.com/us/en/document/dst/isl29125-datasheet)
+- [ISL29125 Datasheet](https://www.renesas.com/en/document/dst/isl29125-datasheet?srsltid=AfmBOop_ENZFrfgORJqpvx7ldyloP3voGkxdFD4eWwj-jj1lfm96mNio)
 - [embedded-hal Documentation](https://docs.rs/embedded-hal/)
