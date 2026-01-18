@@ -22,7 +22,7 @@ jobs:
           - aarch64-unknown-linux-gnu      # 64-bit Raspberry Pi OS
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
@@ -52,30 +52,14 @@ jobs:
         fi
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: raspi-${{ matrix.target }}
         path: artifacts/*
         if-no-files-found: error
 
-    - name: Upload raspi release asset
+    - name: Upload release assets
       if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: artifacts/raspi-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
-        asset_name: raspi-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
-        asset_content_type: application/octet-stream
-
-    - name: Upload raspi_influxdb release asset
-      if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: artifacts/raspi_influxdb-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
-        asset_name: raspi_influxdb-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
-        asset_content_type: application/octet-stream
+        files: artifacts/*
