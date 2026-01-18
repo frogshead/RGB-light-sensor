@@ -79,8 +79,8 @@ where
     fn set_count_values(&mut self, values: [u8; 6]) {
         self.led_counts.green = Some((((values[1] & 0x00FF) as u16) << 8) | (values[0] & 0xFF) as u16);
         self.led_counts.red =   Some((((values[3] & 0x00FF) as u16) << 8) | (values[2] & 0xFF) as u16);
-        self.led_counts.blue = Some((((values[5] & 0x00FF) as u16) << 8) | (values[3] & 0xFF) as u16);
-        
+        self.led_counts.blue = Some((((values[5] & 0x00FF) as u16) << 8) | (values[4] & 0xFF) as u16);
+
 
     }
     fn read_register(&mut self, register: u8) -> Result<u8, Error<E>> {
