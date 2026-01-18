@@ -21,14 +21,17 @@ cargo build --verbose
 # Run tests with verbose output
 cargo test --verbose
 
-# Build the Raspberry Pi example (requires ARM target)
+# Build the Raspberry Pi examples
 cargo build --example raspi
+cargo build --example raspi_influxdb
 
 # Cross-compile for Raspberry Pi 3 (32-bit)
 cargo build --example raspi --release --target armv7-unknown-linux-gnueabihf
+cargo build --example raspi_influxdb --release --target armv7-unknown-linux-gnueabihf
 
 # Cross-compile for Raspberry Pi 3 (64-bit)
 cargo build --example raspi --release --target aarch64-unknown-linux-gnu
+cargo build --example raspi_influxdb --release --target aarch64-unknown-linux-gnu
 ```
 
 ## CI/CD
@@ -40,8 +43,8 @@ The repository has two GitHub Actions workflows:
    - Runs unit tests
 
 2. **build-raspi.yml** - Builds Raspberry Pi binaries:
-   - Cross-compiles for both armv7 (32-bit) and aarch64 (64-bit)
-   - Uploads build artifacts
+   - Cross-compiles both `raspi` and `raspi_influxdb` examples for armv7 (32-bit) and aarch64 (64-bit)
+   - Uploads build artifacts for easy download
    - Attaches binaries to GitHub releases
 
 ## Architecture
@@ -66,8 +69,6 @@ Register addresses are defined as constants in the private `RegisterMap` struct 
 
 `read_led_counters()` performs a bulk 6-byte read starting from `GREEN_DATA_LOW_BYTE` register. The read order is Green-Red-Blue (2 bytes each), and `set_count_values()` reconstructs the u16 values from low/high byte pairs.
 
-**Note**: There's a bug in line 82 where blue counter incorrectly uses `values[3]` instead of `values[4]` for the high byte.
-
 ### Operating Modes
 
 The sensor supports multiple operating modes via `OperationModes` enum:
@@ -84,14 +85,29 @@ Tests use `embedded-hal-mock` to create I2C transaction expectations without har
 - `should_return_wrong_device_id_error()` - tests error handling
 - `should_update_led_counters()` - validates counter value parsing
 
-### Example Usage
+### Examples
 
-The `examples/raspi.rs` demonstrates usage on Raspberry Pi:
+#### `examples/raspi.rs` - Basic Usage
+
+Demonstrates basic usage on Raspberry Pi:
 1. Create I2C device at `/dev/i2c-1`
 2. Initialize `Isl29125` driver
 3. Set operating mode (e.g., GreenOnly)
 4. Verify device ID
-5. Read LED counters in a loop
+5. Read LED counters in a loop and print to console
+
+#### `examples/raspi_influxdb.rs` - InfluxDB Integration
+
+Demonstrates integration with InfluxDB v3 for time-series data logging:
+1. Reads configuration from environment variables (INFLUXDB_HOST, INFLUXDB_TOKEN, etc.)
+2. Initializes sensor and sets RGB mode
+3. Continuously reads RGB values at configurable intervals
+4. Sends data to InfluxDB v3 using HTTP API with line protocol format
+5. Uses async/await with tokio runtime
+6. Tags data with configurable location
+
+Dependencies: `reqwest`, `tokio` (dev-dependencies only)
+Note: Uses InfluxDB v2 API endpoint which is compatible with InfluxDB v3
 
 ## Development Notes
 

@@ -34,16 +34,21 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
 
-    - name: Build example for ${{ matrix.target }}
+    - name: Build raspi example for ${{ matrix.target }}
       run: cargo build --example raspi --release --target ${{ matrix.target }}
 
-    - name: Rename binary
+    - name: Build raspi_influxdb example for ${{ matrix.target }}
+      run: cargo build --example raspi_influxdb --release --target ${{ matrix.target }}
+
+    - name: Rename binaries
       run: |
         mkdir -p artifacts
         if [ "${{ matrix.target }}" = "armv7-unknown-linux-gnueabihf" ]; then
           cp target/${{ matrix.target }}/release/examples/raspi artifacts/raspi-armv7
+          cp target/${{ matrix.target }}/release/examples/raspi_influxdb artifacts/raspi_influxdb-armv7
         else
           cp target/${{ matrix.target }}/release/examples/raspi artifacts/raspi-aarch64
+          cp target/${{ matrix.target }}/release/examples/raspi_influxdb artifacts/raspi_influxdb-aarch64
         fi
 
     - name: Upload artifact
@@ -53,7 +58,7 @@ jobs:
         path: artifacts/*
         if-no-files-found: error
 
-    - name: Upload release asset
+    - name: Upload raspi release asset
       if: github.event_name == 'release'
       uses: actions/upload-release-asset@v1
       env:
@@ -62,4 +67,15 @@ jobs:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: artifacts/raspi-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
         asset_name: raspi-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
+        asset_content_type: application/octet-stream
+
+    - name: Upload raspi_influxdb release asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: artifacts/raspi_influxdb-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
+        asset_name: raspi_influxdb-${{ matrix.target == 'armv7-unknown-linux-gnueabihf' && 'armv7' || 'aarch64' }}
         asset_content_type: application/octet-stream

@@ -153,6 +153,59 @@ cargo build --example raspi --release --target armv7-unknown-linux-gnueabihf
 scp target/armv7-unknown-linux-gnueabihf/release/examples/raspi pi@raspberrypi:~/
 ```
 
+### InfluxDB Integration Example
+
+The `raspi_influxdb` example reads RGB values from the sensor and sends them to InfluxDB v3 for time-series data storage and analysis.
+
+#### Configuration
+
+The example uses environment variables for configuration:
+
+- `INFLUXDB_HOST` - InfluxDB server URL (default: `https://us-east-1-1.aws.cloud2.influxdata.com`)
+- `INFLUXDB_TOKEN` - InfluxDB authentication token (required)
+- `INFLUXDB_DATABASE` - Database name (default: `rgb-sensor`)
+- `SENSOR_LOCATION` - Location tag for the sensor (default: `default`)
+- `READ_INTERVAL_SECS` - Seconds between readings (default: `5`)
+
+#### Running the InfluxDB Example
+
+Download the pre-built binary from GitHub Actions or build it:
+
+```bash
+# Build on Raspberry Pi
+cargo build --example raspi_influxdb --release
+
+# Or cross-compile
+cargo build --example raspi_influxdb --release --target armv7-unknown-linux-gnueabihf
+```
+
+Run with environment variables:
+
+```bash
+# Set your InfluxDB credentials
+export INFLUXDB_TOKEN="your-token-here"
+export INFLUXDB_DATABASE="your-database"
+export SENSOR_LOCATION="greenhouse"
+export READ_INTERVAL_SECS="10"
+
+# Run the example
+sudo -E ./raspi_influxdb-armv7
+```
+
+The example will continuously read RGB values and send them to InfluxDB with the following schema:
+
+```
+Measurement: rgb_sensor
+Tags: location
+Fields: red, green, blue (integers 0-65535)
+```
+
+You can query the data using InfluxQL or SQL:
+
+```sql
+SELECT * FROM rgb_sensor WHERE location = 'greenhouse' ORDER BY time DESC LIMIT 10
+```
+
 ## License
 
 Author: Mikko Viitamäki
